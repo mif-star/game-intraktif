@@ -3,8 +3,6 @@
    IOT THEORY — CRIMSON PROTOCOL
    MAIN GAME SYSTEM
 ========================================= */
-const SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzwyGn15ncMXRjPKTnYG3sGh0zQvJP3MLmxSS8fPcCfekzb7K73AEEFtM2TcEf1xGPB/exec";
-
 const AVATARS = [
   ["👾", "PIXEL GHOST"],
   ["🥷", "CYBER NINJA"],
@@ -241,7 +239,7 @@ const ESSAYS = [
   ]
 ];
 
-/* STATE AND SHEETS API */
+/* STATE AND NODE API */
 
 let state = { users: [], sessionActive: false, sessionEnded: false };
 let currentUser = null;
@@ -249,14 +247,8 @@ let pendingProfile = null;
 let selectedAvatar = 0;
 let playerToken = null;
 let adminToken = null;
-let bridgeLoadPromise = null;
-let bridgeWindow = null;
-let bridgeOrigin = null;
-let bridgeReadyResolve = null;
-let apiRequestId = 0;
 let saveQueue = Promise.resolve();
 let sessionRefreshBusy = false;
-const pendingApiRequests = new Map();
 
 let currentLevel = 0;
 let currentStage = 0;
@@ -273,88 +265,16 @@ function setConnectionStatus(message, failed = false) {
   status.classList.toggle("error", failed);
 }
 
-function loadSheetsBridge() {
-  if (!SHEETS_WEB_APP_URL || SHEETS_WEB_APP_URL.includes("PASTE_YOUR_")) {
-    return Promise.reject(new Error("URL Google Apps Script belum dikonfigurasi."));
-  }
-
-  if (!bridgeLoadPromise) {
-    bridgeLoadPromise = new Promise((resolve, reject) => {
-      const bridge = $("sheetsBridge");
-      const timeout = setTimeout(() => {
-        bridgeLoadPromise = null;
-        bridgeReadyResolve = null;
-        reject(new Error("Jembatan Google Sheets tidak siap. Periksa deployment Apps Script."));
-      }, 20000);
-      bridge.onerror = () => {
-        clearTimeout(timeout);
-        bridgeLoadPromise = null;
-        bridgeReadyResolve = null;
-        reject(new Error("Jembatan Google Sheets gagal dimuat."));
-      };
-      bridgeReadyResolve = () => {
-        clearTimeout(timeout);
-        bridgeReadyResolve = null;
-        resolve();
-      };
-      bridge.src = SHEETS_WEB_APP_URL + "?bridge=1";
-    });
-  }
-
-  return bridgeLoadPromise;
+async function sheetsRequest(action, payload = {}) {
+  const response = await fetch("/api/game", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ action, payload })
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.error || "Permintaan ke server gagal.");
+  return result.result;
 }
-
-function sheetsRequest(action, payload = {}) {
-  return loadSheetsBridge().then(() => new Promise((resolve, reject) => {
-    if (!bridgeWindow || !bridgeOrigin) {
-      reject(new Error("Jembatan Google Sheets belum tersambung."));
-      return;
-    }
-
-    const id = ++apiRequestId;
-    const timeout = setTimeout(() => {
-      pendingApiRequests.delete(id);
-      reject(new Error("Google Sheets tidak merespons. Periksa koneksi dan deployment."));
-    }, 20000);
-
-    pendingApiRequests.set(id, { resolve, reject, timeout });
-    bridgeWindow.postMessage({
-      channel: "crimson-sheets",
-      id,
-      action,
-      payload
-    }, bridgeOrigin);
-  }));
-}
-
-window.addEventListener("message", event => {
-  let origin;
-  try {
-    origin = new URL(event.origin);
-  } catch {
-    return;
-  }
-  if (origin.protocol !== "https:" ||
-      !origin.hostname.endsWith(".script.googleusercontent.com")) return;
-
-  if (event.data?.channel === "crimson-sheets-ready") {
-    bridgeWindow = event.source;
-    bridgeOrigin = event.origin;
-    bridgeReadyResolve?.();
-    return;
-  }
-  if (event.data?.channel !== "crimson-sheets-result") return;
-  if (event.source !== bridgeWindow || event.origin !== bridgeOrigin) return;
-
-  const request = pendingApiRequests.get(event.data.id);
-  if (!request) return;
-
-  clearTimeout(request.timeout);
-  pendingApiRequests.delete(event.data.id);
-
-  if (event.data.error) request.reject(new Error(event.data.error));
-  else request.resolve(event.data.result);
-});
 
 function saveState(newAnswer = null) {
   if (!currentUser || currentUser.role !== "participant" || !playerToken) {
@@ -1112,7 +1032,6 @@ document.addEventListener("keydown", event => {
 });
 
 async function refreshSession() {
-  if (!SHEETS_WEB_APP_URL || SHEETS_WEB_APP_URL.includes("PASTE_YOUR_")) return;
   if (sessionRefreshBusy) return;
   sessionRefreshBusy = true;
 
@@ -1255,7 +1174,7 @@ function logout() {
 }
 
 async function initializeApp() {
-  setConnectionStatus("MENGHUBUNGKAN KE GOOGLE SHEETS...");
+  setConnectionStatus("MENGHUBUNGKAN KE SERVER GAME...");
 
   try {
     const result = await sheetsRequest("getSession");
@@ -1264,12 +1183,12 @@ async function initializeApp() {
     updateLobby();
     setConnectionStatus("TERHUBUNG KE GOOGLE SHEETS");
   } catch (error) {
-    setConnectionStatus("GOOGLE SHEETS BELUM TERHUBUNG: " + error.message, true);
+      setConnectionStatus("SERVER GAME BELUM TERHUBUNG: " + error.message, true);
   }
 }
 
 initializeApp();
-setInterval(refreshSession, 5000);
+setInterval(refreshSession, 30000);
 
 
 /* =====================================

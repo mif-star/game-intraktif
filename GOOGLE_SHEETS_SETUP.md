@@ -1,63 +1,70 @@
-# Google Sheets Setup
+# Menjalankan Game dengan Node.js dan Google Sheets
 
-## 1. Buat backend
+Game sekarang mengirim permintaan ke API Node.js di `/api/game`. Browser tidak lagi memanggil Google Apps Script secara langsung. Kunci service account hanya disimpan di server lokal atau Vercel, bukan di HTML/JavaScript frontend.
 
-1. Buat Google Sheet baru untuk data game.
-2. Dari Sheet, buka **Extensions > Apps Script**.
-3. Ganti isi `Code.gs` dengan `apps-script/Code.gs`.
-4. Di Apps Script, klik **+ > HTML**, beri nama file tepat `Bridge`, lalu ganti isinya dengan `apps-script/Bridge.html`.
-5. Simpan, pilih fungsi `setupCrimsonSheets`, lalu tekan **Run** dan berikan izin akses spreadsheet. Fungsi ini membuat tab `Players`, `Answers`, dan `Settings` serta menyimpan ID Sheet.
+## 1. Siapkan Google Sheet
 
-## 2. Atur password admin
+1. Gunakan spreadsheet yang sudah ada atau buat Google Sheet baru.
+2. Salin ID dari URL. ID adalah bagian di antara `/d/` dan `/edit`:
+   `https://docs.google.com/spreadsheets/d/ID_SPREADSHEET/edit`
+3. Biarkan spreadsheet tetap privat.
 
-Di Apps Script, buka **Project Settings > Script Properties** dan tambahkan:
+API akan membuat tab yang belum ada: `Players`, `Answers`, `Settings`, `Sessions`, dan `LoginAttempts`, termasuk baris judulnya.
 
-- Property: `ADMIN_PASSWORD`
-- Value: password admin yang kuat dan tidak dipakai di tempat lain
+## 2. Buat kredensial service account
 
-Username admin tetap `admin`. Password ini hanya berada di backend Apps Script, bukan di JavaScript halaman.
+1. Buka Google Cloud Console, lalu buat atau pilih project.
+2. Aktifkan **Google Sheets API** untuk project itu.
+3. Buat **Service Account**, lalu buat dan unduh key JSON.
+4. Dari file JSON, salin nilai `client_email` dan `private_key`. Jaga file JSON tetap rahasia—jangan commit ke GitHub dan jangan tempel ke JavaScript frontend.
+5. Bagikan spreadsheet ke alamat `client_email` service account dan beri akses **Editor**. Sheet tidak perlu dijadikan publik.
 
-## 3. Deploy backend
+## 3. Jalankan di komputer lokal
 
-1. Pilih **Deploy > New deployment > Web app**.
-2. Pilih **Execute as: Me**.
-3. Pilih akses **Anyone** agar halaman game dapat memanggil bridge.
-4. Deploy dan salin URL yang berakhiran `/exec`.
-5. Di `script.js`, ganti nilai `SHEETS_WEB_APP_URL` dengan URL tersebut.
-6. Setelah perubahan backend, pilih **Deploy > Manage deployments > Edit**, buat versi baru, lalu deploy ulang.
+1. Instal Node.js versi 20 atau lebih baru.
+2. Di folder project, salin `.env.example` menjadi `.env`.
+3. Isi nilai di `.env`:
+   - `GOOGLE_SHEET_ID`: ID spreadsheet dari langkah 1.
+   - `GOOGLE_SERVICE_ACCOUNT_EMAIL`: nilai `client_email`.
+   - `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY`: nilai `private_key`, termasuk baris BEGIN/END. Pertahankan tanda kutip dan format `\n`.
+   - `ADMIN_PASSWORD`: password admin yang kuat dan unik.
+4. Buka terminal VS Code di folder project dan jalankan:
 
-### Jika muncul "Google Sheets tidak merespons"
+   ```powershell
+   npm start
+   ```
 
-1. Pastikan project Apps Script memiliki dua file terbaru: `Code.gs` dari `apps-script/Code.gs` dan file HTML bernama `Bridge` dari `apps-script/Bridge.html`. Jangan tempel HTML ke file `.gs`.
-2. Di `Bridge.html`, harus ada pesan `crimson-sheets-ready` dan listener yang menerima pesan dari `window.top`. Bagian ini memberi tahu game bahwa bridge sudah siap.
-3. Simpan kedua file, lalu buka **Deploy > Manage deployments > Edit**, pilih **New version**, dan tekan **Deploy**. Pastikan **Execute as: Me** dan akses **Anyone**.
-4. Buka URL Web App dengan menambahkan `?bridge=1` di bagian akhir. Contoh: `https://script.google.com/macros/s/ID_DEPLOYMENT/exec?bridge=1`. Halaman kosong tanpa pesan error adalah normal.
-5. Di `script.js`, gunakan URL deployment yang berakhir dengan `/exec` saja; jangan menambahkan `?bridge=1` ke `SHEETS_WEB_APP_URL`. Halaman game menambahkan parameter itu sendiri.
-6. Commit dan push perubahan frontend ke GitHub, tunggu deployment Vercel selesai, lalu muat ulang situs game.
+5. Buka `http://localhost:3000`. Coba login admin, mulai sesi, lalu tes pendaftaran peserta dan penyimpanan jawaban.
 
-Jika muncul error file `Bridge` tidak ditemukan, pastikan file HTML bernama tepat `Bridge` ada di project yang sama, lalu deploy versi baru. Jika game melaporkan bridge tidak siap, deployment masih memakai `Bridge.html` lama atau perubahan Apps Script belum di-deploy. Memuat halaman `?bridge=1` saja tidak memperbarui deployment.
+Server lokal menggunakan modul bawaan Node.js, jadi tidak perlu `npm install`. Jangan kirim atau commit file `.env`.
 
-Jangan ubah Google Sheet menjadi publik. Endpoint hanya mengembalikan profil peserta yang login dan data admin setelah admin berhasil login. Peserta harus memakai password minimal 8 karakter; server menyimpan hash bersalt, bukan password asli.
+## 4. Deploy ke Vercel
 
-## 4. Jalankan dan uji secara lokal
+1. Push project ke repository GitHub yang terhubung dengan Vercel. Pastikan `api/game.js`, folder `lib/`, `server.js`, `package.json`, dan file frontend ikut ter-push.
+2. Di Vercel, buka **Project > Settings > Environment Variables**.
+3. Tambahkan empat variabel yang sama dengan `.env` untuk environment **Production**. Tambahkan juga untuk Preview/Development jika diperlukan.
+4. Redeploy project setelah menambah atau mengubah environment variable.
+5. Buka situs Vercel, tekan **Ctrl+F5**, lalu pastikan status berubah menjadi **TERHUBUNG KE GOOGLE SHEETS**.
+6. Login admin dengan username `admin` dan password dari `ADMIN_PASSWORD`.
 
-1. Buka folder project di Visual Studio Code.
-2. Pasang extension **Live Server** jika belum ada.
-3. Klik kanan `index.html`, lalu pilih **Open with Live Server**. Halaman akan terbuka di browser melalui alamat lokal, biasanya `http://127.0.0.1:5500`.
-4. Pastikan koneksi internet tersedia dan URL deployment Apps Script sudah terpasang di `script.js` agar login dan penyimpanan Google Sheets dapat diuji.
+Vercel menjalankan `api/game.js` sebagai Node.js serverless function. Frontend memanggil `/api/game` pada domain yang sama. URL Web App `/exec`, Apps Script, dan file bridge tidak lagi dipakai.
+Pembaruan status sesi peserta diperiksa setiap 30 detik untuk mengurangi pemakaian kuota Google Sheets.
 
-Preview lokal tidak perlu di-push ke GitHub. Simpan perubahan, uji di browser, lalu baru lakukan commit dan push. Tanpa backend Google Sheets yang ter-deploy, tampilan game bisa dibuka tetapi fitur login, sesi, dan penyimpanan data tidak akan berfungsi.
+## Jika terjadi error
 
-Pada halaman game, admin dapat membuka formulir melalui tombol **ADMIN ACCESS** di halaman depan. Jika perubahan frontend sudah dipush dan Vercel terhubung ke repository, tunggu deployment selesai lalu muat ulang situs. Login admin membutuhkan `ADMIN_PASSWORD` yang sama dengan Script Properties Apps Script.
+- **Konfigurasi Vercel belum lengkap**: periksa nama keempat environment variable, lalu redeploy.
+- **Google Sheets API: ... permission denied**: pastikan spreadsheet dibagikan ke `client_email` service account sebagai Editor dan Sheets API sudah aktif.
+- **Requested entity was not found**: periksa `GOOGLE_SHEET_ID`; isinya ID saja, bukan seluruh URL.
+- **ADMIN_PASSWORD belum diatur**: tambahkan variabel tersebut di Vercel lalu redeploy.
+- Setelah mengubah `.env` lokal, hentikan dan jalankan kembali `npm start`.
+- Properti `SHEET_ID` dan `ADMIN_PASSWORD` lama di Apps Script tidak dipakai Node.js. Atur `GOOGLE_SHEET_ID` dan `ADMIN_PASSWORD` di `.env` atau Vercel Environment Variables.
 
-## 5. Data yang disimpan
+## Data yang disimpan
 
-- `Players`: nama, kelas, hash password, avatar, dan pelanggaran.
-- `Answers`: jawaban, status benar, poin, dan waktu. XP serta progres misi dihitung ulang dari tab ini.
+- `Players`: profil peserta dan hash password bersalt.
+- `Answers`: jawaban, skor, dan waktu pengiriman.
 - `Settings`: status sesi aktif/berakhir.
+- `Sessions`: hash token login, masa berlaku, dan status logout.
+- `LoginAttempts`: penghitung percobaan login gagal dan masa cooldown.
 
-Data versi lama yang tersimpan di `localStorage` browser tidak diimpor otomatis. Peserta perlu membuat/memasuki akun di backend baru; jangan menyalin password lama ke spreadsheet.
-
-## Catatan
-
-Apps Script menjadi perantara yang mengeksekusi akses sebagai pemilik Sheet. Batasi akses editor Apps Script dan Sheet hanya kepada admin tepercaya. Endpoint publik tetap dapat menerima pendaftaran peserta, jadi gunakan password kuat dan bagikan tautan game hanya kepada kelas yang dituju.
+File di `apps-script/` adalah versi lama dan tidak digunakan oleh deployment Node.js.
