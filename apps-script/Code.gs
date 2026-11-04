@@ -47,38 +47,7 @@ const ESSAY_KEYWORDS = [
 
 function doGet(event) {
   if (event && event.parameter && event.parameter.bridge === "1") {
-    const bridgeHtml = `<!DOCTYPE html>
-<html>
-<head>
-  <base target="_top">
-  <meta charset="utf-8">
-</head>
-<body>
-<script>
-  window.top.postMessage({ channel: "crimson-sheets-ready" }, "*");
-
-  window.addEventListener("message", event => {
-    if (event.source !== window.top || !event.data || event.data.channel !== "crimson-sheets") return;
-
-    const request = event.data;
-    google.script.run
-      .withSuccessHandler(result => window.top.postMessage({
-        channel: "crimson-sheets-result",
-        id: request.id,
-        result
-      }, "*"))
-      .withFailureHandler(error => window.top.postMessage({
-        channel: "crimson-sheets-result",
-        id: request.id,
-        error: error && error.message ? error.message : "Permintaan gagal diproses."
-      }, "*"))
-      .handleClientRequest(request.action, request.payload);
-  });
-</script>
-</body>
-</html>`;
-
-    return HtmlService.createHtmlOutput(bridgeHtml)
+    return HtmlService.createHtmlOutputFromFile("Bridge")
       .setTitle("Crimson Sheets Bridge")
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }

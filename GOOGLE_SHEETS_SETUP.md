@@ -5,7 +5,8 @@
 1. Buat Google Sheet baru untuk data game.
 2. Dari Sheet, buka **Extensions > Apps Script**.
 3. Ganti isi `Code.gs` dengan `apps-script/Code.gs`.
-4. Simpan, pilih fungsi `setupCrimsonSheets`, lalu tekan **Run** dan berikan izin akses spreadsheet. Fungsi ini membuat tab `Players`, `Answers`, dan `Settings` serta menyimpan ID Sheet.
+4. Di Apps Script, klik **+ > HTML**, beri nama file tepat `Bridge`, lalu ganti isinya dengan `apps-script/Bridge.html`.
+5. Simpan, pilih fungsi `setupCrimsonSheets`, lalu tekan **Run** dan berikan izin akses spreadsheet. Fungsi ini membuat tab `Players`, `Answers`, dan `Settings` serta menyimpan ID Sheet.
 
 ## 2. Atur password admin
 
@@ -27,13 +28,14 @@ Username admin tetap `admin`. Password ini hanya berada di backend Apps Script, 
 
 ### Jika muncul "Google Sheets tidak merespons"
 
-1. Pastikan isi `Code.gs` pada Apps Script sudah diperbarui dari `apps-script/Code.gs` di project ini. Bridge disajikan langsung oleh `doGet`; file HTML terpisah bernama `Bridge` tidak diperlukan. Bridge mengirim status siap dari frame Apps Script bagian dalam supaya halaman game dapat berkomunikasi dengannya.
-2. Simpan project, lalu buka **Deploy > Manage deployments > Edit**, pilih **New version**, dan tekan **Deploy**. Pastikan **Execute as: Me** dan akses **Anyone**.
-3. Buka URL Web App dengan menambahkan `?bridge=1` di bagian akhir. Contoh: `https://script.google.com/macros/s/ID_DEPLOYMENT/exec?bridge=1`. Halaman kosong tanpa pesan error berarti bridge berhasil dimuat.
-4. Di `script.js`, gunakan URL deployment yang berakhir dengan `/exec` saja; jangan menambahkan `?bridge=1` ke `SHEETS_WEB_APP_URL`. Halaman game menambahkan parameter itu sendiri.
-5. Commit dan push perubahan frontend ke GitHub, tunggu deployment Vercel selesai, lalu muat ulang situs game.
+1. Pastikan project Apps Script memiliki dua file terbaru: `Code.gs` dari `apps-script/Code.gs` dan file HTML bernama `Bridge` dari `apps-script/Bridge.html`. Jangan tempel HTML ke file `.gs`.
+2. Di `Bridge.html`, harus ada pesan `crimson-sheets-ready` dan listener yang menerima pesan dari `window.top`. Bagian ini memberi tahu game bahwa bridge sudah siap.
+3. Simpan kedua file, lalu buka **Deploy > Manage deployments > Edit**, pilih **New version**, dan tekan **Deploy**. Pastikan **Execute as: Me** dan akses **Anyone**.
+4. Buka URL Web App dengan menambahkan `?bridge=1` di bagian akhir. Contoh: `https://script.google.com/macros/s/ID_DEPLOYMENT/exec?bridge=1`. Halaman kosong tanpa pesan error adalah normal.
+5. Di `script.js`, gunakan URL deployment yang berakhir dengan `/exec` saja; jangan menambahkan `?bridge=1` ke `SHEETS_WEB_APP_URL`. Halaman game menambahkan parameter itu sendiri.
+6. Commit dan push perubahan frontend ke GitHub, tunggu deployment Vercel selesai, lalu muat ulang situs game.
 
-Jika muncul error file `Bridge` tidak ditemukan, deployment masih menjalankan kode lama. Perubahan file di editor Apps Script tidak otomatis memperbarui deployment Web App. Jika game melaporkan bridge tidak siap, pastikan kedua sisi telah diperbarui: Apps Script dari `apps-script/Code.gs` dan frontend dari `script.js`.
+Jika muncul error file `Bridge` tidak ditemukan, pastikan file HTML bernama tepat `Bridge` ada di project yang sama, lalu deploy versi baru. Jika game melaporkan bridge tidak siap, deployment masih memakai `Bridge.html` lama atau perubahan Apps Script belum di-deploy. Memuat halaman `?bridge=1` saja tidak memperbarui deployment.
 
 Jangan ubah Google Sheet menjadi publik. Endpoint hanya mengembalikan profil peserta yang login dan data admin setelah admin berhasil login. Peserta harus memakai password minimal 8 karakter; server menyimpan hash bersalt, bukan password asli.
 

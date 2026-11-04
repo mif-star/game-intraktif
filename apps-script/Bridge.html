@@ -12,17 +12,18 @@
     if (event.source !== window.top || !event.data || event.data.channel !== "crimson-sheets") return;
 
     const request = event.data;
+    const reply = response => window.top.postMessage(response, event.origin);
     google.script.run
-      .withSuccessHandler(result => window.top.postMessage({
+      .withSuccessHandler(result => reply({
         channel: "crimson-sheets-result",
         id: request.id,
         result
-      }, "*"))
-      .withFailureHandler(error => window.top.postMessage({
+      }))
+      .withFailureHandler(error => reply({
         channel: "crimson-sheets-result",
         id: request.id,
         error: error && error.message ? error.message : "Permintaan gagal diproses."
-      }, "*"))
+      }))
       .handleClientRequest(request.action, request.payload);
   });
 </script>
