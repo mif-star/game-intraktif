@@ -3,7 +3,6 @@
    IOT THEORY — CRIMSON PROTOCOL
    MAIN GAME SYSTEM
 ========================================= */
-PASTE
 const SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbztehPRUt-NqDvuuC5GP334f4eXfzq0L-4Wyvu75lNWC81CiAYs7kxK13gjJMGAABjl/exec";
 
 const AVATARS = [
@@ -387,10 +386,6 @@ function showScreen(id) {
     : "NETWORK CTF";
 }
 
-function toggleAdminLogin() {
-  $("adminLogin").classList.toggle("hidden");
-}
-
 /* PLAYER LOGIN */
 
 async function beginCharacter() {
@@ -463,6 +458,8 @@ async function confirmCharacter() {
 async function loginAdmin() {
   const username = $("adminUsername").value;
   const password = $("adminPassword").value;
+  const errorMessage = $("adminLoginError");
+  errorMessage.textContent = "";
 
   try {
     const result = await sheetsRequest("adminLogin", { username, password });
@@ -472,7 +469,7 @@ async function loginAdmin() {
     setConnectionStatus("ADMIN TERHUBUNG KE GOOGLE SHEETS");
     showScreen("admin");
   } catch (error) {
-    alert(error.message);
+    errorMessage.textContent = error.message;
   }
 }
 

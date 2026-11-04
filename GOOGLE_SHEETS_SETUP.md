@@ -28,7 +28,18 @@ Username admin tetap `admin`. Password ini hanya berada di backend Apps Script, 
 
 Jangan ubah Google Sheet menjadi publik. Endpoint hanya mengembalikan profil peserta yang login dan data admin setelah admin berhasil login. Peserta harus memakai password minimal 8 karakter; server menyimpan hash bersalt, bukan password asli.
 
-## 4. Data yang disimpan
+## 4. Jalankan dan uji secara lokal
+
+1. Buka folder project di Visual Studio Code.
+2. Pasang extension **Live Server** jika belum ada.
+3. Klik kanan `index.html`, lalu pilih **Open with Live Server**. Halaman akan terbuka di browser melalui alamat lokal, biasanya `http://127.0.0.1:5500`.
+4. Pastikan koneksi internet tersedia dan URL deployment Apps Script sudah terpasang di `script.js` agar login dan penyimpanan Google Sheets dapat diuji.
+
+Preview lokal tidak perlu di-push ke GitHub. Simpan perubahan, uji di browser, lalu baru lakukan commit dan push. Tanpa backend Google Sheets yang ter-deploy, tampilan game bisa dibuka tetapi fitur login, sesi, dan penyimpanan data tidak akan berfungsi.
+
+Pada halaman game, admin dapat membuka formulir melalui tombol **ADMIN ACCESS** di halaman depan. Jika perubahan frontend sudah dipush dan Vercel terhubung ke repository, tunggu deployment selesai lalu muat ulang situs. Login admin membutuhkan `ADMIN_PASSWORD` yang sama dengan Script Properties Apps Script.
+
+## 5. Data yang disimpan
 
 - `Players`: nama, kelas, hash password, avatar, dan pelanggaran.
 - `Answers`: jawaban, status benar, poin, dan waktu. XP serta progres misi dihitung ulang dari tab ini.
@@ -39,4 +50,3 @@ Data versi lama yang tersimpan di `localStorage` browser tidak diimpor otomatis.
 ## Catatan
 
 Apps Script menjadi perantara yang mengeksekusi akses sebagai pemilik Sheet. Batasi akses editor Apps Script dan Sheet hanya kepada admin tepercaya. Endpoint publik tetap dapat menerima pendaftaran peserta, jadi gunakan password kuat dan bagikan tautan game hanya kepada kelas yang dituju.
-

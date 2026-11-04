@@ -42,6 +42,11 @@
               HOW TO PLAY
             </button>
           </div>
+          <div class="admin-entry">
+            <button class="text-link" onclick="showScreen('adminAccess')">
+              ADMIN ACCESS
+            </button>
+          </div>
           <div class="metrics">
             <div><b>10</b><small>MISSIONS</small></div>
             <div><b>150</b><small>QUESTIONS</small></div>
@@ -235,22 +240,34 @@
         </button>
 
         <div class="admin-entry">
-          <button class="text-link" onclick="toggleAdminLogin()">
-            Admin access
+          <button class="text-link" onclick="showScreen('adminAccess')">
+            Login sebagai admin
           </button>
         </div>
+      </div>
+    </section>
 
-        <div id="adminLogin" class="hidden admin-login">
-          <label>Username admin
-            <input id="adminUsername" value="admin">
-          </label>
-          <label>Password admin
-            <input id="adminPassword" type="password" placeholder="Password admin">
-          </label>
-          <button class="btn outline full" onclick="loginAdmin()">
-            LOGIN ADMIN
-          </button>
-        </div>
+    <!-- ADMIN LOGIN -->
+    <section id="adminAccess" class="screen narrow">
+      <button class="back" onclick="showScreen('welcome')">← BACK</button>
+
+      <div class="panel auth">
+        <p class="eyebrow">ADMINISTRATOR ACCESS</p>
+        <h2>ADMIN <em>LOGIN</em></h2>
+
+        <label>Username admin
+          <input id="adminUsername" value="admin" autocomplete="username">
+        </label>
+
+        <label>Password admin
+          <input id="adminPassword" type="password" autocomplete="current-password"
+            placeholder="Password admin">
+        </label>
+
+        <p id="adminLoginError" class="error" role="alert"></p>
+        <button class="btn outline full" onclick="loginAdmin()">
+          LOGIN ADMIN
+        </button>
       </div>
     </section>
 
