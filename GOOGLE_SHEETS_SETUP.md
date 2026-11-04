@@ -26,6 +26,16 @@ Username admin tetap `admin`. Password ini hanya berada di backend Apps Script, 
 5. Di `script.js`, ganti nilai `SHEETS_WEB_APP_URL` dengan URL tersebut.
 6. Setelah perubahan backend, pilih **Deploy > Manage deployments > Edit**, buat versi baru, lalu deploy ulang.
 
+### Jika muncul "Google Sheets tidak merespons"
+
+1. Buka URL Web App dengan menambahkan `?bridge=1` di bagian akhir. Contoh: `https://script.google.com/macros/s/ID_DEPLOYMENT/exec?bridge=1`.
+2. Jika muncul pesan **"File HTML dengan nama Bridge tidak ditemukan"**, di editor Apps Script klik **+ > HTML**, beri nama file tepat `Bridge` (tanpa `.html`), lalu salin isi `apps-script/Bridge.html` dari project ini.
+3. Simpan project, lalu buka **Deploy > Manage deployments > Edit**, pilih **New version**, dan tekan **Deploy**. Pastikan **Execute as: Me** dan akses **Anyone**.
+4. Buka ulang URL `...?bridge=1`. Halaman kosong tanpa pesan error berarti file bridge berhasil dimuat.
+5. Muat ulang situs game. URL deployment `/exec` di `script.js` harus sama dengan URL Web App yang baru saja diuji.
+
+Jika pesannya berbeda, pastikan deployment menggunakan versi kode terbaru. Perubahan file di editor Apps Script tidak otomatis memperbarui deployment Web App.
+
 Jangan ubah Google Sheet menjadi publik. Endpoint hanya mengembalikan profil peserta yang login dan data admin setelah admin berhasil login. Peserta harus memakai password minimal 8 karakter; server menyimpan hash bersalt, bukan password asli.
 
 ## 4. Jalankan dan uji secara lokal
