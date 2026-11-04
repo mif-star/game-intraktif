@@ -1,0 +1,475 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10050d">
+  <title>IOT THEORY — CRIMSON PROTOCOL</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="scanlines"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#" onclick="showScreen('welcome'); return false">
+      <span class="brand-mark">✦</span>
+      <span>IOT THEORY<small>CRIMSON PROTOCOL</small></span>
+    </a>
+    <div class="top-actions">
+      <span id="modeLabel">NETWORK CTF</span>
+      <span id="connectionStatus" class="connection-status" role="status">CONNECTING TO GOOGLE SHEETS</span>
+      <button id="logoutBtn" class="btn small ghost hidden" onclick="logout()">LOG OUT</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- HOME -->
+    <section id="welcome" class="screen active">
+      <div class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">CLASS XI TJKT / NETWORK FUNDAMENTALS</p>
+          <h1>ENTER THE<br><em>CRIMSON</em><br>PROTOCOL.</h1>
+          <p class="lead">
+            Choose your identity. Enter the network. Complete every mission
+            and claim your place among the legends.
+          </p>
+          <div class="button-row">
+            <button class="btn primary" onclick="showScreen('login')">
+              ENTER GAME →
+            </button>
+            <button class="btn outline" onclick="showScreen('guide')">
+              HOW TO PLAY
+            </button>
+          </div>
+          <div class="metrics">
+            <div><b>10</b><small>MISSIONS</small></div>
+            <div><b>150</b><small>QUESTIONS</small></div>
+            <div><b>03</b><small>STAGES</small></div>
+          </div>
+        </div>
+
+        <div class="hero-art">
+          <div class="orbit orbit-one"></div>
+          <div class="orbit orbit-two"></div>
+          <div class="ghost-mascot">◕ᴗ◕<i>♥</i></div>
+          <div class="terminal">
+            <div class="terminal-head">
+              <i></i><i></i><i></i>
+              <span>CRIMSON_CORE.exe</span>
+            </div>
+            <p>&gt; booting network...</p>
+            <p>&gt; loading missions <b>10/10</b></p>
+            <p>&gt; protocol status: <strong>READY</strong></p>
+            <div class="meter"><span></span></div>
+          </div>
+          <span class="pixel px1">✦</span>
+          <span class="pixel px2">♡</span>
+          <span class="pixel px3">✧</span>
+        </div>
+      </div>
+
+      <div class="feature-strip">
+        <span>▣ CHARACTER SELECT</span>
+        <span>◈ MISSION CENTER</span>
+        <span>♛ FINAL PODIUM</span>
+        <span>♥ PIXEL WORLD</span>
+      </div>
+
+      
+<!-- SELECT YOUR MISSION -->
+<div class="launcher-section">
+
+  <div class="launcher-heading">
+    <div>
+      <p class="eyebrow">CHOOSE YOUR DESTINATION</p>
+      <h2>SELECT YOUR <em>MISSION</em></h2>
+    </div>
+    <span class="mission-count">03 MISSIONS AVAILABLE</span>
+  </div>
+
+  <div class="launcher-missions">
+
+    <div class="launcher-card">
+      <div class="mission-image network-image">
+        <span>MISSION 01</span>
+      </div>
+      <div class="mission-info">
+        <h3>NETWORK BREACH</h3>
+        <p>Explore networking concepts and discover hidden flags.</p>
+        <button onclick="showScreen('login')">PLAY NOW →</button>
+      </div>
+    </div>
+
+    <div class="launcher-card">
+      <div class="mission-image security-image">
+        <span>MISSION 02</span>
+      </div>
+      <div class="mission-info">
+        <h3>CYBER SECURITY</h3>
+        <p>Test your knowledge of web security and OWASP.</p>
+        <button onclick="showScreen('login')">PLAY NOW →</button>
+      </div>
+    </div>
+
+    <div class="launcher-card">
+      <div class="mission-image terminal-image">
+        <span>MISSION 03</span>
+      </div>
+      <div class="mission-info">
+        <h3>CTF CHALLENGE</h3>
+        <p>Complete challenges, collect flags, and earn XP.</p>
+        <button onclick="showScreen('login')">PLAY NOW →</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PLAYER STATUS -->
+  <div class="launcher-bottom">
+
+    <div class="player-status">
+      <span>◈</span>
+      <div>
+        <small>PLAYER STATUS</small>
+        <strong>READY TO CONNECT</strong>
+      </div>
+    </div>
+
+    <div class="player-status">
+      <span>✦</span>
+      <div>
+        <small>GAME MODE</small>
+        <strong>NETWORK CTF</strong>
+      </div>
+    </div>
+
+    <div class="player-status">
+      <span>⌁</span>
+      <div>
+        <small>PROTOCOL</small>
+        <strong>CRIMSON ACTIVE</strong>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- AUDIO SETTINGS -->
+  <div class="audio-settings">
+    <button id="audioSettingsBtn" type="button">
+      ♫ AUDIO SETTINGS
+    </button>
+
+    <div id="audioPanel" class="audio-panel">
+
+      <label>
+        BACKGROUND MUSIC
+        <input type="checkbox" id="musicToggle" checked>
+      </label>
+
+      <label>
+        SOUND EFFECTS
+        <input type="checkbox" id="sfxToggle" checked>
+      </label>
+
+      <label class="volume-control">
+        MUSIC VOLUME
+        <input type="range" id="musicVolume"
+               min="0" max="1" step="0.01" value="0.4">
+      </label>
+
+      <label class="volume-control">
+        SFX VOLUME
+        <input type="range" id="sfxVolume"
+               min="0" max="1" step="0.01" value="0.7">
+      </label>
+
+    </div>
+  </div>
+
+</div>
+
+    </section>
+
+    <!-- GUIDE -->
+    <section id="guide" class="screen narrow">
+      <button class="back" onclick="showScreen('welcome')">← BACK</button>
+      <p class="eyebrow">PROTOCOL GUIDE</p>
+      <h2>HOW TO <em>PLAY</em></h2>
+
+      <div class="panel guide">
+        <p><b>01 / Choose character</b><br>Pilih avatar, nama, dan kelas.</p>
+        <p><b>02 / Join lobby</b><br>Peserta menunggu admin memulai sesi.</p>
+        <p><b>03 / Complete missions</b><br>10 level dengan 3 tahapan soal.</p>
+        <p><b>04 / Protect your session</b><br>Hindari berpindah tab atau menyalin soal.</p>
+        <p class="muted">
+          Catatan: versi demo ini menyimpan data di browser yang sama.
+          Untuk permainan real-time antarperangkat diperlukan server.
+        </p>
+      </div>
+    </section>
+
+    <!-- LOGIN -->
+    <section id="login" class="screen narrow">
+      <button class="back" onclick="showScreen('welcome')">← BACK</button>
+
+      <div class="panel auth">
+        <p class="eyebrow">IDENTIFICATION REQUIRED</p>
+        <h2>PLAYER <em>ACCESS</em></h2>
+
+        <label>Nama peserta
+          <input id="playerName" placeholder="Nama lengkap">
+        </label>
+
+        <label>Kelas
+          <input id="playerClass" placeholder="Contoh: XI TJKT 1">
+        </label>
+
+        <label>Password
+          <input id="playerPassword" type="password" minlength="8" autocomplete="current-password" placeholder="Minimal 8 karakter">
+        </label>
+
+        <p id="loginError" class="error"></p>
+        <button class="btn primary full" onclick="beginCharacter()">
+          CONTINUE →
+        </button>
+
+        <div class="admin-entry">
+          <button class="text-link" onclick="toggleAdminLogin()">
+            Admin access
+          </button>
+        </div>
+
+        <div id="adminLogin" class="hidden admin-login">
+          <label>Username admin
+            <input id="adminUsername" value="admin">
+          </label>
+          <label>Password admin
+            <input id="adminPassword" type="password" placeholder="Password admin">
+          </label>
+          <button class="btn outline full" onclick="loginAdmin()">
+            LOGIN ADMIN
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHARACTER SELECTION -->
+    <section id="characters" class="screen">
+      <button class="back" onclick="showScreen('login')">← BACK</button>
+
+      <div class="center-head">
+        <p class="eyebrow">CREATE YOUR IDENTITY</p>
+        <h2>CHOOSE YOUR <em>AVATAR</em></h2>
+        <p class="muted">Karakter akan muncul di profil dan podium pemenang.</p>
+      </div>
+
+      <div id="characterGrid" class="character-grid"></div>
+
+      <button class="btn primary character-confirm" onclick="confirmCharacter()">
+        CONFIRM CHARACTER →
+      </button>
+    </section>
+
+    <!-- LOBBY -->
+    <section id="lobby" class="screen narrow">
+      <div class="panel lobby-card">
+        <div id="lobbyAvatar" class="lobby-avatar">👾</div>
+        <p class="eyebrow">PLAYER REGISTERED</p>
+        <h2 id="lobbyName">PLAYER</h2>
+        <p id="lobbyClass" class="muted"></p>
+
+        <div class="waiting">
+          <span class="pulse"></span>
+          WAITING FOR ADMIN TO START SESSION
+        </div>
+
+        <p class="muted tiny">
+          Tunggu admin memulai sesi permainan.
+        </p>
+
+        <button id="lobbyStart" class="btn primary full"
+          onclick="enterMissions()" disabled>
+          WAITING FOR SESSION
+        </button>
+      </div>
+    </section>
+
+    <!-- PARTICIPANT DASHBOARD -->
+    <section id="participant" class="screen">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">PLAYER TERMINAL / MISSION CENTER</p>
+          <h2>WELCOME, <em id="dashName">AGENT</em></h2>
+          <p class="muted">Selesaikan misi untuk mengumpulkan XP.</p>
+        </div>
+        <div class="xp-box">
+          <small>TOTAL XP</small>
+          <b id="dashXP">0 XP</b>
+        </div>
+      </div>
+
+      <div class="player-banner">
+        <div id="dashAvatar" class="player-avatar">👾</div>
+        <div>
+          <b id="dashCharacter">PIXEL GHOST</b>
+          <small id="dashClass">XI TJKT</small>
+        </div>
+        <div class="violation-mini">
+          VIOLATION <b id="dashViolations">0 / 10</b>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat">
+          <small>MISSIONS DONE</small>
+          <b id="doneCount">0 / 10</b>
+        </div>
+        <div class="stat">
+          <small>QUESTIONS CLEARED</small>
+          <b id="questionCount">0 / 150</b>
+        </div>
+        <div class="stat">
+          <small>PLAYER RANK</small>
+          <b id="rankName">ROOKIE</b>
+        </div>
+      </div>
+
+      <div class="section-head compact">
+        <div>
+          <p class="eyebrow">MISSION SELECT</p>
+          <h3>Choose your mission</h3>
+        </div>
+        <span class="muted tiny">COMPLETE IN ORDER</span>
+      </div>
+
+      <div id="missionGrid" class="mission-grid"></div>
+    </section>
+
+    <!-- QUESTION SCREEN -->
+    <section id="challenge" class="screen narrow">
+      <button class="back" onclick="backToMissions()">← MISSION CENTER</button>
+
+      <div class="challenge-head">
+        <div>
+          <p id="missionTag" class="eyebrow">MISSION 01</p>
+          <h2 id="missionTitle">FIRST CONNECTION</h2>
+        </div>
+        <div class="timer-box">
+          <small>TIME LEFT</small>
+          <b id="timer">45</b>
+          <small>SECONDS</small>
+        </div>
+      </div>
+
+      <div class="progress-line">
+        <span id="questionProgress"></span>
+      </div>
+
+      <div class="question-meta">
+        <span id="stageName">STAGE 01 / 03</span>
+        <span id="questionNo">QUESTION 01 / 05</span>
+      </div>
+
+      <div class="panel question-card">
+        <div class="question-top">
+          <span id="difficulty" class="tag">EASY</span>
+          <span id="questionType" class="muted tiny">MULTIPLE CHOICE</span>
+        </div>
+
+        <h3 id="questionText"></h3>
+        <div id="answerArea"></div>
+        <div id="answerFeedback" class="feedback hidden"></div>
+
+        <button id="submitAnswer" class="btn primary full" onclick="submitAnswer()">
+          SUBMIT ANSWER →
+        </button>
+      </div>
+
+      <p class="tiny muted center">
+        CRIMSON PROTOCOL MONITOR ACTIVE • COPY DISABLED
+      </p>
+    </section>
+
+    <!-- ADMIN -->
+    <section id="admin" class="screen">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">SYSTEM CONTROL / ADMINISTRATOR</p>
+          <h2>CONTROL <em>ROOM</em></h2>
+          <p class="muted">Pantau peserta, pelanggaran, dan progres.</p>
+        </div>
+        <span class="tag live">ADMIN ACCESS</span>
+      </div>
+
+      <div class="admin-actions">
+        <button class="btn primary" onclick="startSession()">▶ START SESSION</button>
+        <button class="btn outline" onclick="endSession()">END SESSION</button>
+        <button class="btn outline" onclick="resetDemo()">RESET DEMO DATA</button>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat"><small>REGISTERED PLAYERS</small><b id="adminUsers">0</b></div>
+        <div class="stat"><small>SESSION STATUS</small><b id="sessionStatus">WAITING</b></div>
+        <div class="stat"><small>QUESTIONS ANSWERED</small><b id="adminAnswers">0</b></div>
+        <div class="stat"><small>VIOLATIONS</small><b id="adminViolations">0</b></div>
+      </div>
+
+      <div class="admin-grid">
+        <div class="panel">
+          <p class="eyebrow">PLAYER MONITOR</p>
+          <h3>Participant activity</h3>
+          <div id="participantTable"></div>
+        </div>
+
+        <div class="panel">
+          <p class="eyebrow">FINAL RANKING</p>
+          <h3>Leaderboard</h3>
+          <div id="adminLeaderboard"></div>
+        </div>
+      </div>
+
+      <div class="panel final-admin">
+        <div>
+          <p class="eyebrow">FINAL CEREMONY</p>
+          <h3>Winner announcement</h3>
+          <p class="muted tiny">Leaderboard final muncul setelah sesi berakhir.</p>
+        </div>
+        <button class="btn primary" onclick="showPodium()">
+          OPEN FINAL PODIUM →
+        </button>
+      </div>
+    </section>
+
+    <!-- FINAL PODIUM -->
+    <section id="podium" class="screen">
+      <div class="center-head">
+        <p class="eyebrow">CRIMSON PROTOCOL / FINAL CEREMONY</p>
+        <h1 class="podium-title">HALL OF <em>LEGENDS</em></h1>
+        <p class="muted">The champions of Network Fundamentals.</p>
+      </div>
+      <div id="podiumArea" class="podium-area"></div>
+      <button class="btn outline" onclick="showScreen('welcome')">BACK TO HOME</button>
+    </section>
+
+    <!-- TERMINATED -->
+    <section id="finished" class="screen narrow">
+      <div class="panel finish-card">
+        <div class="finish-icon">⚠</div>
+        <p class="eyebrow">SESSION TERMINATED</p>
+        <h2>PROTOCOL <em>LOCKED</em></h2>
+        <p id="finishReason">Batas pelanggaran tercapai.</p>
+        <p class="muted tiny">Hubungi admin untuk informasi hasil pengerjaan.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © 2026 IOT THEORY — CRIMSON PROTOCOL
+    <span>CLASS XI TJKT / NETWORK CTF</span>
+  </footer>
+
+  <iframe id="sheetsBridge" title="Google Sheets connection" hidden></iframe>
+  <script src="script.js"></script>
+</body>
+</html>
