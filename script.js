@@ -3,7 +3,7 @@
    IOT THEORY — CRIMSON PROTOCOL
    MAIN GAME SYSTEM
 ========================================= */
-const SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwRj2ydtj_Ny2Su4u7SMUjSfirA5wMQZ2pDvmsqdlEKcNBnuW74VgrI3xbEkXknPiBh/exec"
+const SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwRj2ydtj_Ny2Su4u7SMUjSfirA5wMQZ2pDvmsqdlEKcNBnuW74VgrI3xbEkXknPiBh/exec?bridge=1"
 
 const AVATARS = [
   ["👾", "PIXEL GHOST"],
