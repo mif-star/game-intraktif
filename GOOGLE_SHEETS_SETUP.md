@@ -5,8 +5,7 @@
 1. Buat Google Sheet baru untuk data game.
 2. Dari Sheet, buka **Extensions > Apps Script**.
 3. Ganti isi `Code.gs` dengan `apps-script/Code.gs`.
-4. Tambahkan file HTML bernama `Bridge`, lalu isi dengan `apps-script/Bridge.html`.
-5. Simpan, pilih fungsi `setupCrimsonSheets`, lalu tekan **Run** dan berikan izin akses spreadsheet. Fungsi ini membuat tab `Players`, `Answers`, dan `Settings` serta menyimpan ID Sheet.
+4. Simpan, pilih fungsi `setupCrimsonSheets`, lalu tekan **Run** dan berikan izin akses spreadsheet. Fungsi ini membuat tab `Players`, `Answers`, dan `Settings` serta menyimpan ID Sheet.
 
 ## 2. Atur password admin
 
@@ -28,13 +27,12 @@ Username admin tetap `admin`. Password ini hanya berada di backend Apps Script, 
 
 ### Jika muncul "Google Sheets tidak merespons"
 
-1. Buka URL Web App dengan menambahkan `?bridge=1` di bagian akhir. Contoh: `https://script.google.com/macros/s/ID_DEPLOYMENT/exec?bridge=1`.
-2. Jika muncul pesan **"File HTML dengan nama Bridge tidak ditemukan"**, di editor Apps Script klik **+ > HTML**, beri nama file tepat `Bridge` (tanpa `.html`), lalu salin isi `apps-script/Bridge.html` dari project ini.
-3. Simpan project, lalu buka **Deploy > Manage deployments > Edit**, pilih **New version**, dan tekan **Deploy**. Pastikan **Execute as: Me** dan akses **Anyone**.
-4. Buka ulang URL `...?bridge=1`. Halaman kosong tanpa pesan error berarti file bridge berhasil dimuat.
-5. Muat ulang situs game. URL deployment `/exec` di `script.js` harus sama dengan URL Web App yang baru saja diuji.
+1. Pastikan isi `Code.gs` pada Apps Script sudah diperbarui dari `apps-script/Code.gs` di project ini. Bridge sekarang disajikan langsung oleh `doGet`; file HTML terpisah bernama `Bridge` tidak diperlukan.
+2. Simpan project, lalu buka **Deploy > Manage deployments > Edit**, pilih **New version**, dan tekan **Deploy**. Pastikan **Execute as: Me** dan akses **Anyone**.?bridge=1` di bagian akhir. Contoh: `https://script.google.com/mac
+3. Buka URL Web App dengan menambahkan `ros/s/ID_DEPLOYMENT/exec?bridge=1`. Halaman kosong tanpa pesan error berarti bridge berhasil dimuat.
+4. Muat ulang situs game. URL deployment `/exec` di `script.js` harus sama dengan URL Web App yang baru saja diuji.
 
-Jika pesannya berbeda, pastikan deployment menggunakan versi kode terbaru. Perubahan file di editor Apps Script tidak otomatis memperbarui deployment Web App.
+Jika muncul error file `Bridge` tidak ditemukan, deployment masih menjalankan kode lama. Perubahan file di editor Apps Script tidak otomatis memperbarui deployment Web App.
 
 Jangan ubah Google Sheet menjadi publik. Endpoint hanya mengembalikan profil peserta yang login dan data admin setelah admin berhasil login. Peserta harus memakai password minimal 8 karakter; server menyimpan hash bersalt, bukan password asli.
 
