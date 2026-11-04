@@ -27,12 +27,13 @@ Username admin tetap `admin`. Password ini hanya berada di backend Apps Script, 
 
 ### Jika muncul "Google Sheets tidak merespons"
 
-1. Pastikan isi `Code.gs` pada Apps Script sudah diperbarui dari `apps-script/Code.gs` di project ini. Bridge sekarang disajikan langsung oleh `doGet`; file HTML terpisah bernama `Bridge` tidak diperlukan.
-2. Simpan project, lalu buka **Deploy > Manage deployments > Edit**, pilih **New version**, dan tekan **Deploy**. Pastikan **Execute as: Me** dan akses **Anyone**.?bridge=1` di bagian akhir. Contoh: `https://script.google.com/mac
-3. Buka URL Web App dengan menambahkan `ros/s/ID_DEPLOYMENT/exec?bridge=1`. Halaman kosong tanpa pesan error berarti bridge berhasil dimuat.
-4. Muat ulang situs game. URL deployment `/exec` di `script.js` harus sama dengan URL Web App yang baru saja diuji.
+1. Pastikan isi `Code.gs` pada Apps Script sudah diperbarui dari `apps-script/Code.gs` di project ini. Bridge disajikan langsung oleh `doGet`; file HTML terpisah bernama `Bridge` tidak diperlukan. Bridge mengirim status siap dari frame Apps Script bagian dalam supaya halaman game dapat berkomunikasi dengannya.
+2. Simpan project, lalu buka **Deploy > Manage deployments > Edit**, pilih **New version**, dan tekan **Deploy**. Pastikan **Execute as: Me** dan akses **Anyone**.
+3. Buka URL Web App dengan menambahkan `?bridge=1` di bagian akhir. Contoh: `https://script.google.com/macros/s/ID_DEPLOYMENT/exec?bridge=1`. Halaman kosong tanpa pesan error berarti bridge berhasil dimuat.
+4. Di `script.js`, gunakan URL deployment yang berakhir dengan `/exec` saja; jangan menambahkan `?bridge=1` ke `SHEETS_WEB_APP_URL`. Halaman game menambahkan parameter itu sendiri.
+5. Commit dan push perubahan frontend ke GitHub, tunggu deployment Vercel selesai, lalu muat ulang situs game.
 
-Jika muncul error file `Bridge` tidak ditemukan, deployment masih menjalankan kode lama. Perubahan file di editor Apps Script tidak otomatis memperbarui deployment Web App.
+Jika muncul error file `Bridge` tidak ditemukan, deployment masih menjalankan kode lama. Perubahan file di editor Apps Script tidak otomatis memperbarui deployment Web App. Jika game melaporkan bridge tidak siap, pastikan kedua sisi telah diperbarui: Apps Script dari `apps-script/Code.gs` dan frontend dari `script.js`.
 
 Jangan ubah Google Sheet menjadi publik. Endpoint hanya mengembalikan profil peserta yang login dan data admin setelah admin berhasil login. Peserta harus memakai password minimal 8 karakter; server menyimpan hash bersalt, bukan password asli.
 

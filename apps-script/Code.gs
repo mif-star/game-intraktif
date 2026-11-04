@@ -55,17 +55,19 @@ function doGet(event) {
 </head>
 <body>
 <script>
+  window.top.postMessage({ channel: "crimson-sheets-ready" }, "*");
+
   window.addEventListener("message", event => {
-    if (event.source !== parent || !event.data || event.data.channel !== "crimson-sheets") return;
+    if (event.source !== window.top || !event.data || event.data.channel !== "crimson-sheets") return;
 
     const request = event.data;
     google.script.run
-      .withSuccessHandler(result => parent.postMessage({
+      .withSuccessHandler(result => window.top.postMessage({
         channel: "crimson-sheets-result",
         id: request.id,
         result
       }, "*"))
-      .withFailureHandler(error => parent.postMessage({
+      .withFailureHandler(error => window.top.postMessage({
         channel: "crimson-sheets-result",
         id: request.id,
         error: error && error.message ? error.message : "Permintaan gagal diproses."

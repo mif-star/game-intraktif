@@ -3,7 +3,7 @@
    IOT THEORY — CRIMSON PROTOCOL
    MAIN GAME SYSTEM
 ========================================= */
-const SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwRj2ydtj_Ny2Su4u7SMUjSfirA5wMQZ2pDvmsqdlEKcNBnuW74VgrI3xbEkXknPiBh/exec?bridge=1"
+const SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwRj2ydtj_Ny2Su4u7SMUjSfirA5wMQZ2pDvmsqdlEKcNBnuW74VgrI3xbEkXknPiBh/exec";
 
 const AVATARS = [
   ["👾", "PIXEL GHOST"],
@@ -250,6 +250,9 @@ let selectedAvatar = 0;
 let playerToken = null;
 let adminToken = null;
 let bridgeLoadPromise = null;
+let bridgeWindow = null;
+let bridgeOrigin = null;
+let bridgeReadyResolve = null;
 let apiRequestId = 0;
 let saveQueue = Promise.resolve();
 let sessionRefreshBusy = false;
@@ -278,9 +281,23 @@ function loadSheetsBridge() {
   if (!bridgeLoadPromise) {
     bridgeLoadPromise = new Promise((resolve, reject) => {
       const bridge = $("sheetsBridge");
-      bridge.onload = resolve;
-      bridge.onerror = () => reject(new Error("Jembatan Google Sheets gagal dimuat."));
-      bridge.src = SHEETS_WEB_APP_URL + (SHEETS_WEB_APP_URL.includes("?") ? "&" : "?") + "bridge=1";
+      const timeout = setTimeout(() => {
+        bridgeLoadPromise = null;
+        bridgeReadyResolve = null;
+        reject(new Error("Jembatan Google Sheets tidak siap. Periksa deployment Apps Script."));
+      }, 20000);
+      bridge.onerror = () => {
+        clearTimeout(timeout);
+        bridgeLoadPromise = null;
+        bridgeReadyResolve = null;
+        reject(new Error("Jembatan Google Sheets gagal dimuat."));
+      };
+      bridgeReadyResolve = () => {
+        clearTimeout(timeout);
+        bridgeReadyResolve = null;
+        resolve();
+      };
+      bridge.src = SHEETS_WEB_APP_URL + "?bridge=1";
     });
   }
 
@@ -289,6 +306,11 @@ function loadSheetsBridge() {
 
 function sheetsRequest(action, payload = {}) {
   return loadSheetsBridge().then(() => new Promise((resolve, reject) => {
+    if (!bridgeWindow || !bridgeOrigin) {
+      reject(new Error("Jembatan Google Sheets belum tersambung."));
+      return;
+    }
+
     const id = ++apiRequestId;
     const timeout = setTimeout(() => {
       pendingApiRequests.delete(id);
@@ -296,18 +318,33 @@ function sheetsRequest(action, payload = {}) {
     }, 20000);
 
     pendingApiRequests.set(id, { resolve, reject, timeout });
-    $("sheetsBridge").contentWindow.postMessage({
+    bridgeWindow.postMessage({
       channel: "crimson-sheets",
       id,
       action,
       payload
-    }, "*");
+    }, bridgeOrigin);
   }));
 }
 
 window.addEventListener("message", event => {
-  if (event.source !== $("sheetsBridge").contentWindow) return;
+  let origin;
+  try {
+    origin = new URL(event.origin);
+  } catch {
+    return;
+  }
+  if (origin.protocol !== "https:" ||
+      !origin.hostname.endsWith(".script.googleusercontent.com")) return;
+
+  if (event.data?.channel === "crimson-sheets-ready") {
+    bridgeWindow = event.source;
+    bridgeOrigin = event.origin;
+    bridgeReadyResolve?.();
+    return;
+  }
   if (event.data?.channel !== "crimson-sheets-result") return;
+  if (event.source !== bridgeWindow || event.origin !== bridgeOrigin) return;
 
   const request = pendingApiRequests.get(event.data.id);
   if (!request) return;
